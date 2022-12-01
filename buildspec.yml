@@ -1,0 +1,44 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      java: openjdk8
+      python: 3.7
+    commands:
+      - pip install --upgrade 'six==1.15.0'
+      - pip install pre-commit
+      - pip install pyyaml --upgrade
+      - pip install cloudformation-cli cloudformation-cli-java-plugin
+  build:
+    commands:
+      - pre-commit run --all-files
+      - |
+        if [ "$(ls -A $CODEBUILD_SRC_DIR)" ]; then
+          cd $CODEBUILD_SRC_DIR
+          if [ "$(ls -A aws-kendraranking-executionplan)" ]; then
+             echo "aws-kendraranking-executionplan exist, installing common library dependency first before verifying."
+             cd "aws-kendraranking-executionplan"
+             mvn clean install
+             cd ".."
+          else
+             echo "aws-kendraranking-executionplan doesn't exist"
+          fi
+
+          # skip hidden folders
+          dirs=$(find . -not -path "\./\.*" -mindepth 1 -maxdepth 1 -type d)
+          echo "Folders to build: $dirs"
+          for directory in $dirs; do
+            cd "$directory"
+            mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B clean verify --no-transfer-progress
+            if [ "$?" -ne 0 ] ; then
+                echo "Build failed!"
+                exit 1
+            else
+                cd ".."
+            fi
+          done
+        else
+          echo "$CODEBUILD_SRC_DIR is empty"
+        fi
+    finally:
+      - cat "$CODEBUILD_SRC_DIR/aws-kendraranking-executionplan/rpdk.log"
