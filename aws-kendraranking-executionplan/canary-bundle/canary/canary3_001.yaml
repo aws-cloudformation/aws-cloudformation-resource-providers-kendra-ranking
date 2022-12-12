@@ -1,0 +1,19 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  CanaryExecutionPlanWithTags:
+    Type: 'AWS::KendraRanking::ExecutionPlan'
+    Properties:
+      Name: 'CanaryExecutionPlan'
+      Description: 'A description'
+      Tags:
+         - Key: 'KeyOne'
+         - Value: 'ValueOne'
+Outputs:
+  GetAttArnValue:
+    Value:
+      Fn::GetAtt:
+          - 'CanaryExecutionPlanWithTags'
+          - 'Arn'
+  RefValue:
+    Value:
+      Ref: 'CanaryExecutionPlanWithTags'

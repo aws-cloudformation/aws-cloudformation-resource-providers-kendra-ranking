@@ -67,6 +67,13 @@ public class CreateHandler extends BaseHandlerStd {
         final CallbackContext callbackContext,
         final ProxyClient<KendraRankingClient> proxyClient,
         final Logger logger) {
+        final ResourceModel model = request.getDesiredResourceState();
+        final String clientRequestToken = request.getClientRequestToken();
+
+        logger.log( String.format("[Request: %s] Handling create operation, resource model: %s", clientRequestToken,
+            model));
+
+        model.setTags(Translator.transformTags(request.getDesiredResourceTags()));
 
         return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
             // STEP 1 [create progress chain - required for resource creation]

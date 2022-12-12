@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  CanaryExecutionPlanUpdate:
+    Type: 'AWS::KendraRanking::ExecutionPlan'
+    Properties:
+      Name: 'UpdatedCanaryExecutionPlan'
+      Description: 'A description updated'
+Outputs:
+  GetAttArnValue:
+    Value:
+      Fn::GetAtt:
+          - 'CanaryExecutionPlanUpdate'
+          - 'Arn'
+  RefValue:
+    Value:
+      Ref: 'CanaryExecutionPlanUpdate'

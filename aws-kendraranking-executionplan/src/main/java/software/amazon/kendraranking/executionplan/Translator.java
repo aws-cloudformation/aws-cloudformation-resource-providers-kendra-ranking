@@ -215,4 +215,17 @@ public class Translator {
             .collect(Collectors.toList()))
         .build();
   }
+
+  /**
+   * Overloaded converter method to convert Map<String, String> to Collection<Tag>
+   * where Tag is SDK object and Tags is RPDK object
+   */
+  static List<software.amazon.kendraranking.executionplan.Tag> transformTags(final Map<String, String> tags) {
+    if (tags == null) return null;
+    final List<software.amazon.kendraranking.executionplan.Tag> tags_collection =
+        tags.entrySet().stream()
+            .map(e -> software.amazon.kendraranking.executionplan.Tag.builder().key(e.getKey()).value(e.getValue()).build())
+            .collect(Collectors.toList());
+    return tags_collection;
+  }
 }

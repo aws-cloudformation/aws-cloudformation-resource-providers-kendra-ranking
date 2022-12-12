@@ -1,0 +1,10 @@
+{
+  "Name": "ContractTestPlan2",
+  "Description": "Testing update",
+  "Tags": [
+    {
+      "Key": "key",
+      "Value": "value2"
+    }
+  ]
+}

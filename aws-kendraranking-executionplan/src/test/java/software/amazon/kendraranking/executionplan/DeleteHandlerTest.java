@@ -146,8 +146,8 @@ public class DeleteHandlerTest extends AbstractTestBase {
     public void handleRequest_FailWith_ConflictException() {
         final DeleteHandler handler = new DeleteHandler(testDelay);
 
-        when(proxyClient.client().describeRescoreExecutionPlan(any(DescribeRescoreExecutionPlanRequest.class)))
-            .thenReturn(DescribeRescoreExecutionPlanResponse.builder().build());
+//        when(proxyClient.client().describeRescoreExecutionPlan(any(DescribeRescoreExecutionPlanRequest.class)))
+//            .thenReturn(DescribeRescoreExecutionPlanResponse.builder().build());
 
         when(proxyClient.client().deleteRescoreExecutionPlan(any(DeleteRescoreExecutionPlanRequest.class)))
             .thenThrow(ConflictException.builder().build());
@@ -166,6 +166,6 @@ public class DeleteHandlerTest extends AbstractTestBase {
         });
 
         verify(proxyClient.client(), times(1)).deleteRescoreExecutionPlan(any(DeleteRescoreExecutionPlanRequest.class));
-        verify(proxyClient.client(), times(1)).describeRescoreExecutionPlan(any(DescribeRescoreExecutionPlanRequest.class));
+        //verify(proxyClient.client(), times(1)).describeRescoreExecutionPlan(any(DescribeRescoreExecutionPlanRequest.class));
     }
 }
