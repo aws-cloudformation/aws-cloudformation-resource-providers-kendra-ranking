@@ -1,9 +1,9 @@
 package software.amazon.kendraranking.executionplan;
 
-import software.amazon.awssdk.services.kendraintelligentranking.KendraIntelligentRankingClient;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ListRescoreExecutionPlansRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ListRescoreExecutionPlansResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.RescoreExecutionPlanSummary;
+import software.amazon.awssdk.services.kendraranking.KendraRankingClient;
+import software.amazon.awssdk.services.kendraranking.model.ListRescoreExecutionPlansRequest;
+import software.amazon.awssdk.services.kendraranking.model.ListRescoreExecutionPlansResponse;
+import software.amazon.awssdk.services.kendraranking.model.RescoreExecutionPlanSummary;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -34,15 +34,15 @@ public class ListHandlerTest extends AbstractTestBase{
     private AmazonWebServicesClientProxy proxy;
 
     @Mock
-    private ProxyClient<KendraIntelligentRankingClient> proxyClient;
+    private ProxyClient<KendraRankingClient> proxyClient;
 
     @Mock
-    KendraIntelligentRankingClient sdkClient;
+    KendraRankingClient sdkClient;
 
     @BeforeEach
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
-        sdkClient = mock(KendraIntelligentRankingClient.class);
+        sdkClient = mock(KendraRankingClient.class);
         proxyClient = MOCK_PROXY(proxy, sdkClient);
     }
 

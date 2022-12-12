@@ -1,0 +1,15 @@
+.idea/
+.gradle/
+.hypothesis/
+*.zip
+rpdk.log*
+**/settings.internal.json
+build
+out/
+gradle/
+gradlew
+gradlew.bat
+*.iml
+wrapper/
+/buildSrc
+.DS_Store

@@ -5,12 +5,12 @@ import static software.amazon.kendraranking.executionplan.ApiName.DELETE_EXECUTI
 import java.time.Duration;
 
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
-import software.amazon.awssdk.services.kendraintelligentranking.KendraIntelligentRankingClient;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ConflictException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DeleteRescoreExecutionPlanRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DeleteRescoreExecutionPlanResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DescribeRescoreExecutionPlanRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ResourceNotFoundException;
+import software.amazon.awssdk.services.kendraranking.KendraRankingClient;
+import software.amazon.awssdk.services.kendraranking.model.ConflictException;
+import software.amazon.awssdk.services.kendraranking.model.DeleteRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.DeleteRescoreExecutionPlanResponse;
+import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.ResourceNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnResourceConflictException;
@@ -46,7 +46,7 @@ public class DeleteHandler extends BaseHandlerStd {
       final AmazonWebServicesClientProxy proxy,
       final ResourceHandlerRequest<ResourceModel> request,
       final CallbackContext callbackContext,
-      final ProxyClient<KendraIntelligentRankingClient> proxyClient,
+      final ProxyClient<KendraRankingClient> proxyClient,
       final Logger logger) {
 
     final ResourceModel model = request.getDesiredResourceState();
@@ -60,7 +60,7 @@ public class DeleteHandler extends BaseHandlerStd {
         // for more information -> https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-test-contract.html
         // if target API does not support 'ResourceNotFoundException' then following check is required
         //.then(progress -> checkForPreDeleteResourceExistence(proxy, proxyClient, request, progress))
-        .then(progress -> preExistenceCheckForDelete(proxy, proxyClient, progress, request, logger))
+        //.then(progress -> preExistenceCheckForDelete(proxy, proxyClient, progress, request, logger))
         // STEP 2.0 [delete/stabilize progress chain - required for resource deletion]
         .then(progress ->
             // If your service API throws 'ResourceNotFoundException' for delete requests then DeleteHandler can return just proxy.initiate construction
@@ -86,39 +86,11 @@ public class DeleteHandler extends BaseHandlerStd {
                 .done(this::setResourceModelToNullAndReturnSuccess));
   }
 
-  private ProgressEvent<ResourceModel, CallbackContext> preExistenceCheckForDelete(
-      final AmazonWebServicesClientProxy proxy,
-      final ProxyClient<KendraIntelligentRankingClient> proxyClient,
-      final ProgressEvent<ResourceModel, CallbackContext> progressEvent,
-      final ResourceHandlerRequest<ResourceModel> request,
-      Logger logger
-  ) {
-    ResourceModel model = progressEvent.getResourceModel();
-    CallbackContext callbackContext = progressEvent.getCallbackContext();
-
-    logger.log(String.format("%s [%s] pre-existence check for deletion", ResourceModel.TYPE_NAME, model.getPrimaryIdentifier()));
-
-    DescribeRescoreExecutionPlanRequest describeRescoreExecutionPlanRequest = DescribeRescoreExecutionPlanRequest.builder()
-        .id(model.getId())
-        .build();
-    try {
-      proxyClient.injectCredentialsAndInvokeV2(describeRescoreExecutionPlanRequest,
-          proxyClient.client()::describeRescoreExecutionPlan);
-      return ProgressEvent.progress(model, callbackContext);
-    } catch (ResourceNotFoundException e) {
-      if (callbackContext.isDeleteWorkflow()) {
-        logger.log(String.format("In a delete workflow. Allow ResourceNotFoundException to propagate."));
-        return ProgressEvent.progress(model, callbackContext);
-      }
-      logger.log(String.format("%s [%s] does not pre-exist", ResourceModel.TYPE_NAME, model.getPrimaryIdentifier()));
-      throw new CfnNotFoundException(ResourceModel.TYPE_NAME, describeRescoreExecutionPlanRequest.id(), e);
-    }
-  }
 
   private ProgressEvent<ResourceModel, CallbackContext> setResourceModelToNullAndReturnSuccess(
       DeleteRescoreExecutionPlanRequest deleteRescoreExecutionPlanRequest,
       DeleteRescoreExecutionPlanResponse deleteRescoreExecutionPlanResponse,
-      ProxyClient<KendraIntelligentRankingClient> proxyClient,
+      ProxyClient<KendraRankingClient> proxyClient,
       ResourceModel resourceModel,
       CallbackContext callbackContext) {
     return ProgressEvent.defaultSuccessHandler(null);
@@ -133,7 +105,7 @@ public class DeleteHandler extends BaseHandlerStd {
    */
   private DeleteRescoreExecutionPlanResponse deleteExecutionPlan(
       final DeleteRescoreExecutionPlanRequest deleteRescoreExecutionPlanRequest,
-      final ProxyClient<KendraIntelligentRankingClient> proxyClient,
+      final ProxyClient<KendraRankingClient> proxyClient,
       final CallbackContext callbackContext,
       final Logger logger) {
     DeleteRescoreExecutionPlanResponse deleteRescoreExecutionPlanResponse;
@@ -175,7 +147,7 @@ public class DeleteHandler extends BaseHandlerStd {
   private boolean stabilizedOnDelete(
       final DeleteRescoreExecutionPlanRequest deleteRescoreExecutionPlanRequest,
       final DeleteRescoreExecutionPlanResponse deleteRescoreExecutionPlanResponse,
-      final ProxyClient<KendraIntelligentRankingClient> proxyClient,
+      final ProxyClient<KendraRankingClient> proxyClient,
       final ResourceModel model,
       final CallbackContext callbackContext,
       final Logger logger) {

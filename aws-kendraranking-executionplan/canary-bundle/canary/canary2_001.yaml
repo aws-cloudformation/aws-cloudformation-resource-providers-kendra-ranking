@@ -1,0 +1,19 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  CanaryExecutionPlanCapacityUnits:
+    Type: 'AWS::KendraRanking::ExecutionPlan'
+    Properties:
+      Name: 'CanaryExecutionPlan'
+      Description: 'A description'
+      CapacityUnits:
+        RescoreCapacityUnits: 2
+
+Outputs:
+  GetAttArnValue:
+    Value:
+      Fn::GetAtt:
+          - 'CanaryExecutionPlanCapacityUnits'
+          - 'Arn'
+  RefValue:
+    Value:
+      Ref: 'CanaryExecutionPlanCapacityUnits'

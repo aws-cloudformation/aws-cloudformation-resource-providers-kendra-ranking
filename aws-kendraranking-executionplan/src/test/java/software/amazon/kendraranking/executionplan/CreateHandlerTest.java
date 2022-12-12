@@ -4,18 +4,18 @@ import java.time.Duration;
 import java.util.Arrays;
 
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
-import software.amazon.awssdk.services.kendraintelligentranking.KendraIntelligentRankingClient;
-import software.amazon.awssdk.services.kendraintelligentranking.model.AccessDeniedException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ConflictException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.CreateRescoreExecutionPlanRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.CreateRescoreExecutionPlanResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DescribeRescoreExecutionPlanRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DescribeRescoreExecutionPlanResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ListTagsForResourceRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ListTagsForResourceResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.RescoreExecutionPlanStatus;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ServiceQuotaExceededException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ValidationException;
+import software.amazon.awssdk.services.kendraranking.KendraRankingClient;
+import software.amazon.awssdk.services.kendraranking.model.AccessDeniedException;
+import software.amazon.awssdk.services.kendraranking.model.ConflictException;
+import software.amazon.awssdk.services.kendraranking.model.CreateRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.CreateRescoreExecutionPlanResponse;
+import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanResponse;
+import software.amazon.awssdk.services.kendraranking.model.ListTagsForResourceRequest;
+import software.amazon.awssdk.services.kendraranking.model.ListTagsForResourceResponse;
+import software.amazon.awssdk.services.kendraranking.model.RescoreExecutionPlanStatus;
+import software.amazon.awssdk.services.kendraranking.model.ServiceQuotaExceededException;
+import software.amazon.awssdk.services.kendraranking.model.ValidationException;
 import software.amazon.cloudformation.exceptions.CfnAccessDeniedException;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
@@ -54,10 +54,10 @@ public class CreateHandlerTest extends AbstractTestBase {
     private AmazonWebServicesClientProxy proxy;
 
     @Mock
-    private ProxyClient<KendraIntelligentRankingClient> proxyClient;
+    private ProxyClient<KendraRankingClient> proxyClient;
 
     @Mock
-    KendraIntelligentRankingClient sdkClient;
+    KendraRankingClient sdkClient;
 
     TestExecutionArnBuilder testExecutionArnBuilder = new TestExecutionArnBuilder();
 
@@ -67,7 +67,7 @@ public class CreateHandlerTest extends AbstractTestBase {
     @BeforeEach
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
-        sdkClient = mock(KendraIntelligentRankingClient.class);
+        sdkClient = mock(KendraRankingClient.class);
         proxyClient = MOCK_PROXY(proxy, sdkClient);
     }
 
@@ -105,7 +105,7 @@ public class CreateHandlerTest extends AbstractTestBase {
                 .id(id)
                 .name(name)
                 .status(RescoreExecutionPlanStatus.ACTIVE.toString())
-                .capacityUnits(software.amazon.awssdk.services.kendraintelligentranking.model.CapacityUnitsConfiguration
+                .capacityUnits(software.amazon.awssdk.services.kendraranking.model.CapacityUnitsConfiguration
                     .builder().rescoreCapacityUnits(10).build())
                 .description(description)
                 .build());
@@ -293,7 +293,7 @@ public class CreateHandlerTest extends AbstractTestBase {
         when(proxyClient.client().listTagsForResource(any(ListTagsForResourceRequest.class)))
             .thenReturn(ListTagsForResourceResponse
                 .builder()
-                .tags(Arrays.asList(software.amazon.awssdk.services.kendraintelligentranking.model.Tag
+                .tags(Arrays.asList(software.amazon.awssdk.services.kendraranking.model.Tag
                     .builder().key(key).value(value).build()))
                 .build());
 

@@ -1,6 +1,6 @@
 package software.amazon.kendraranking.executionplan;
 
-import software.amazon.awssdk.services.kendraintelligentranking.KendraIntelligentRankingClient;
+import software.amazon.awssdk.services.kendraranking.KendraRankingClient;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -29,6 +29,6 @@ public abstract class BaseHandlerStd extends BaseHandler<CallbackContext> {
     final AmazonWebServicesClientProxy proxy,
     final ResourceHandlerRequest<ResourceModel> request,
     final CallbackContext callbackContext,
-    final ProxyClient<KendraIntelligentRankingClient> proxyClient,
+    final ProxyClient<KendraRankingClient> proxyClient,
     final Logger logger);
 }

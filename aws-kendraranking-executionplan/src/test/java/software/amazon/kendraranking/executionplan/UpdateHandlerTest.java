@@ -4,23 +4,23 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 
-import software.amazon.awssdk.services.kendraintelligentranking.KendraIntelligentRankingClient;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ConflictException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DescribeRescoreExecutionPlanRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DescribeRescoreExecutionPlanResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ListTagsForResourceRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ListTagsForResourceResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.RescoreExecutionPlanStatus;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ResourceNotFoundException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ServiceQuotaExceededException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.Tag;
-import software.amazon.awssdk.services.kendraintelligentranking.model.TagResourceRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.TagResourceResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.UntagResourceRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.UntagResourceResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.UpdateRescoreExecutionPlanRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.UpdateRescoreExecutionPlanResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ValidationException;
+import software.amazon.awssdk.services.kendraranking.KendraRankingClient;
+import software.amazon.awssdk.services.kendraranking.model.ConflictException;
+import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanResponse;
+import software.amazon.awssdk.services.kendraranking.model.ListTagsForResourceRequest;
+import software.amazon.awssdk.services.kendraranking.model.ListTagsForResourceResponse;
+import software.amazon.awssdk.services.kendraranking.model.RescoreExecutionPlanStatus;
+import software.amazon.awssdk.services.kendraranking.model.ResourceNotFoundException;
+import software.amazon.awssdk.services.kendraranking.model.ServiceQuotaExceededException;
+import software.amazon.awssdk.services.kendraranking.model.Tag;
+import software.amazon.awssdk.services.kendraranking.model.TagResourceRequest;
+import software.amazon.awssdk.services.kendraranking.model.TagResourceResponse;
+import software.amazon.awssdk.services.kendraranking.model.UntagResourceRequest;
+import software.amazon.awssdk.services.kendraranking.model.UntagResourceResponse;
+import software.amazon.awssdk.services.kendraranking.model.UpdateRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.UpdateRescoreExecutionPlanResponse;
+import software.amazon.awssdk.services.kendraranking.model.ValidationException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnResourceConflictException;
@@ -57,10 +57,10 @@ public class UpdateHandlerTest extends AbstractTestBase {
     private AmazonWebServicesClientProxy proxy;
 
     @Mock
-    private ProxyClient<KendraIntelligentRankingClient> proxyClient;
+    private ProxyClient<KendraRankingClient> proxyClient;
 
     @Mock
-    KendraIntelligentRankingClient sdkClient;
+    KendraRankingClient sdkClient;
 
     TestExecutionArnBuilder testExecutionArnBuilder = new TestExecutionArnBuilder();
 
@@ -69,7 +69,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
     @BeforeEach
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
-        sdkClient = mock(KendraIntelligentRankingClient.class);
+        sdkClient = mock(KendraRankingClient.class);
         proxyClient = MOCK_PROXY(proxy, sdkClient);
     }
 

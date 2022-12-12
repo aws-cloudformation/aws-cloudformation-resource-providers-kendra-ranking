@@ -7,16 +7,16 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.AccessDeniedException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ConflictException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DescribeRescoreExecutionPlanRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DescribeRescoreExecutionPlanResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.RescoreExecutionPlanStatus;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ServiceQuotaExceededException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ValidationException;
-import software.amazon.awssdk.services.kendraintelligentranking.KendraIntelligentRankingClient;
-import software.amazon.awssdk.services.kendraintelligentranking.model.CreateRescoreExecutionPlanRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.CreateRescoreExecutionPlanResponse;
+import software.amazon.awssdk.services.kendraranking.model.AccessDeniedException;
+import software.amazon.awssdk.services.kendraranking.model.ConflictException;
+import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanResponse;
+import software.amazon.awssdk.services.kendraranking.model.RescoreExecutionPlanStatus;
+import software.amazon.awssdk.services.kendraranking.model.ServiceQuotaExceededException;
+import software.amazon.awssdk.services.kendraranking.model.ValidationException;
+import software.amazon.awssdk.services.kendraranking.KendraRankingClient;
+import software.amazon.awssdk.services.kendraranking.model.CreateRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.CreateRescoreExecutionPlanResponse;
 import software.amazon.cloudformation.exceptions.CfnAccessDeniedException;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
@@ -44,7 +44,7 @@ public class CreateHandler extends BaseHandlerStd {
 
     private Delay delay;
 
-    private static final BiFunction<ResourceModel, ProxyClient<KendraIntelligentRankingClient>, ResourceModel> EMPTY_CALL =
+    private static final BiFunction<ResourceModel, ProxyClient<KendraRankingClient>, ResourceModel> EMPTY_CALL =
         (model, proxyClient) -> model;
 
 
@@ -65,16 +65,23 @@ public class CreateHandler extends BaseHandlerStd {
         final AmazonWebServicesClientProxy proxy,
         final ResourceHandlerRequest<ResourceModel> request,
         final CallbackContext callbackContext,
-        final ProxyClient<KendraIntelligentRankingClient> proxyClient,
+        final ProxyClient<KendraRankingClient> proxyClient,
         final Logger logger) {
+        final ResourceModel model = request.getDesiredResourceState();
+        final String clientRequestToken = request.getClientRequestToken();
+
+        logger.log( String.format("[Request: %s] Handling create operation, resource model: %s", clientRequestToken,
+            model));
+
+        model.setTags(Translator.transformTags(request.getDesiredResourceTags()));
 
         return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
             // STEP 1 [create progress chain - required for resource creation]
             .then(progress ->
                 proxy.initiate("AWS-KendraRanking-ExecutionPlan::Create", proxyClient, request.getDesiredResourceState(), callbackContext)
                     .translateToServiceRequest(Translator::translateToCreateRequest)
-                    .makeServiceCall((createRerankingEndpointRequest, kendraIntelligentRankingClientProxyClient)
-                        -> createExecutionPlan(createRerankingEndpointRequest, kendraIntelligentRankingClientProxyClient, logger))
+                    .makeServiceCall((createRerankingEndpointRequest, kendraRankingClientProxyClient)
+                        -> createExecutionPlan(createRerankingEndpointRequest, kendraRankingClientProxyClient, logger))
                     .done(this::setId)
             )
             // STEP 2 stabilize
@@ -85,7 +92,7 @@ public class CreateHandler extends BaseHandlerStd {
 
     private ProgressEvent<ResourceModel, CallbackContext> setId(CreateRescoreExecutionPlanRequest createRescoreExecutionPlanRequest,
         CreateRescoreExecutionPlanResponse createRescoreExecutionPlanResponse,
-        ProxyClient<KendraIntelligentRankingClient> proxyClient,
+        ProxyClient<KendraRankingClient> proxyClient,
         ResourceModel resourceModel,
         CallbackContext callbackContext) {
 
@@ -96,7 +103,7 @@ public class CreateHandler extends BaseHandlerStd {
 
     private ProgressEvent<ResourceModel, CallbackContext> stabilize(
         final AmazonWebServicesClientProxy proxy,
-        final ProxyClient<KendraIntelligentRankingClient> proxyClient,
+        final ProxyClient<KendraRankingClient> proxyClient,
         final ProgressEvent<ResourceModel, CallbackContext> progress,
         String callGraph,
         final Logger logger) {
@@ -109,7 +116,7 @@ public class CreateHandler extends BaseHandlerStd {
               isStabilized(proxyInvocation, model, logger)).progress();
     }
 
-    private boolean isStabilized(final ProxyClient<KendraIntelligentRankingClient> proxyClient,
+    private boolean isStabilized(final ProxyClient<KendraRankingClient> proxyClient,
         final ResourceModel model,
         final Logger logger) {
       DescribeRescoreExecutionPlanRequest describeRescoreExecutionPlanRequest = DescribeRescoreExecutionPlanRequest.builder()
@@ -129,7 +136,7 @@ public class CreateHandler extends BaseHandlerStd {
 
     private CreateRescoreExecutionPlanResponse createExecutionPlan(
         final CreateRescoreExecutionPlanRequest createRerankingEndpointRequest,
-        final ProxyClient<KendraIntelligentRankingClient> proxyClient,
+        final ProxyClient<KendraRankingClient> proxyClient,
         final Logger logger) {
       CreateRescoreExecutionPlanResponse createRescoreExecutionPlanResponse;
       try {

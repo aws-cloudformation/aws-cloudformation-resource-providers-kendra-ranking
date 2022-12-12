@@ -8,7 +8,7 @@ import software.amazon.awssdk.core.SdkClient;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.pagination.sync.SdkIterable;
-import software.amazon.awssdk.services.kendraintelligentranking.KendraIntelligentRankingClient;
+import software.amazon.awssdk.services.kendraranking.KendraRankingClient;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Credentials;
 import software.amazon.cloudformation.proxy.LoggerProxy;
@@ -22,10 +22,10 @@ public class AbstractTestBase {
     MOCK_CREDENTIALS = new Credentials("accessKey", "secretKey", "token");
     logger = new LoggerProxy();
   }
-  static ProxyClient<KendraIntelligentRankingClient> MOCK_PROXY(
+  static ProxyClient<KendraRankingClient> MOCK_PROXY(
     final AmazonWebServicesClientProxy proxy,
-    final KendraIntelligentRankingClient sdkClient) {
-    return new ProxyClient<KendraIntelligentRankingClient>() {
+    final KendraRankingClient sdkClient) {
+    return new ProxyClient<KendraRankingClient>() {
       @Override
       public <RequestT extends AwsRequest, ResponseT extends AwsResponse> ResponseT
       injectCredentialsAndInvokeV2(RequestT request, Function<RequestT, ResponseT> requestFunction) {
@@ -59,7 +59,7 @@ public class AbstractTestBase {
       }
 
       @Override
-      public KendraIntelligentRankingClient client() {
+      public KendraRankingClient client() {
         return sdkClient;
       }
     };

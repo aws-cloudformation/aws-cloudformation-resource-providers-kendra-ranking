@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  CanaryExecutionPlan:
+    Type: 'AWS::KendraRanking::ExecutionPlan'
+    Properties:
+      Name: 'CanaryExecutionPlan'
+      Description: 'A description'
+Outputs:
+  GetAttArnValue:
+    Value:
+      Fn::GetAtt:
+          - 'CanaryExecutionPlan'
+          - 'Arn'
+  RefValue:
+    Value:
+      Ref: 'CanaryExecutionPlan'

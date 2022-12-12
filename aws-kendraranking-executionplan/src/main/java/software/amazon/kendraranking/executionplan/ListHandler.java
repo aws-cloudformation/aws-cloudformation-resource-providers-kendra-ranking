@@ -1,8 +1,8 @@
 package software.amazon.kendraranking.executionplan;
 
-import software.amazon.awssdk.services.kendraintelligentranking.KendraIntelligentRankingClient;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ListRescoreExecutionPlansRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ListRescoreExecutionPlansResponse;
+import software.amazon.awssdk.services.kendraranking.KendraRankingClient;
+import software.amazon.awssdk.services.kendraranking.model.ListRescoreExecutionPlansRequest;
+import software.amazon.awssdk.services.kendraranking.model.ListRescoreExecutionPlansResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -17,7 +17,7 @@ public class ListHandler extends BaseHandlerStd {
         final AmazonWebServicesClientProxy proxy,
         final ResourceHandlerRequest<ResourceModel> request,
         final CallbackContext callbackContext,
-        final ProxyClient<KendraIntelligentRankingClient> proxyClient,
+        final ProxyClient<KendraRankingClient> proxyClient,
         final Logger logger) {
 
         // STEP 1 [TODO: construct a body of a request]

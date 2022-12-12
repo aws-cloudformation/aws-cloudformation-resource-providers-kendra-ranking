@@ -10,19 +10,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
-import software.amazon.awssdk.services.kendraintelligentranking.KendraIntelligentRankingClient;
-import software.amazon.awssdk.services.kendraintelligentranking.model.AccessDeniedException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ConflictException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DescribeRescoreExecutionPlanRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DescribeRescoreExecutionPlanResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.RescoreExecutionPlanStatus;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ResourceNotFoundException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ServiceQuotaExceededException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.TagResourceRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.UntagResourceRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.UpdateRescoreExecutionPlanRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.UpdateRescoreExecutionPlanResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ValidationException;
+import software.amazon.awssdk.services.kendraranking.KendraRankingClient;
+import software.amazon.awssdk.services.kendraranking.model.AccessDeniedException;
+import software.amazon.awssdk.services.kendraranking.model.ConflictException;
+import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanResponse;
+import software.amazon.awssdk.services.kendraranking.model.RescoreExecutionPlanStatus;
+import software.amazon.awssdk.services.kendraranking.model.ResourceNotFoundException;
+import software.amazon.awssdk.services.kendraranking.model.ServiceQuotaExceededException;
+import software.amazon.awssdk.services.kendraranking.model.TagResourceRequest;
+import software.amazon.awssdk.services.kendraranking.model.UntagResourceRequest;
+import software.amazon.awssdk.services.kendraranking.model.UpdateRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.UpdateRescoreExecutionPlanResponse;
+import software.amazon.awssdk.services.kendraranking.model.ValidationException;
 import software.amazon.cloudformation.exceptions.CfnAccessDeniedException;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
@@ -65,7 +65,7 @@ public class UpdateHandler extends BaseHandlerStd {
         final AmazonWebServicesClientProxy proxy,
         final ResourceHandlerRequest<ResourceModel> request,
         final CallbackContext callbackContext,
-        final ProxyClient<KendraIntelligentRankingClient> proxyClient,
+        final ProxyClient<KendraRankingClient> proxyClient,
         final Logger logger) {
 
         final ResourceModel model = request.getDesiredResourceState();
@@ -82,15 +82,15 @@ public class UpdateHandler extends BaseHandlerStd {
                 proxy.initiate("AWS-KendraRanking-ExecutionPlan::Update", proxyClient, model, callbackContext)
                     .translateToServiceRequest(resourceModel -> translateToUpdateRequest(model, request.getPreviousResourceState()))
                     .backoffDelay(delay)
-                    .makeServiceCall((updateRescoreExecutionPlanRequest, kendraIntelligentRankingClientProxyClient)
-                        -> updateExecutionPlan(updateRescoreExecutionPlanRequest, kendraIntelligentRankingClientProxyClient, logger))
+                    .makeServiceCall((updateRescoreExecutionPlanRequest, kendraRankingClientProxyClient)
+                        -> updateExecutionPlan(updateRescoreExecutionPlanRequest, kendraRankingClientProxyClient, logger))
                     .stabilize((updateRescoreExecutionPlanRequest,
                         updateRescoreExecutionPlanResponse,
-                        intelligentRankingClientProxyClient,
+                        rankingClientProxyClient,
                         resourceModel,
                         context) -> stabilize(updateRescoreExecutionPlanRequest,
                         updateRescoreExecutionPlanResponse,
-                        intelligentRankingClientProxyClient,
+                        rankingClientProxyClient,
                         resourceModel,
                         context,
                         logger))
@@ -101,7 +101,7 @@ public class UpdateHandler extends BaseHandlerStd {
     }
 
     private DescribeRescoreExecutionPlanResponse validateResourceExists(DescribeRescoreExecutionPlanRequest describeRescoreExecutionPlanRequest,
-        ProxyClient<KendraIntelligentRankingClient> proxyClient) {
+        ProxyClient<KendraRankingClient> proxyClient) {
       DescribeRescoreExecutionPlanResponse describeRescoreExecutionPlanResponse;
       try {
         describeRescoreExecutionPlanResponse = proxyClient.injectCredentialsAndInvokeV2(
@@ -124,7 +124,7 @@ public class UpdateHandler extends BaseHandlerStd {
     private boolean stabilize(
         final UpdateRescoreExecutionPlanRequest updateRescoreExecutionPlanRequest,
         final UpdateRescoreExecutionPlanResponse updateRescoreExecutionPlanResponse,
-        final ProxyClient<KendraIntelligentRankingClient> proxyClient,
+        final ProxyClient<KendraRankingClient> proxyClient,
         final ResourceModel model,
         final CallbackContext callbackContext,
         final Logger logger) {
@@ -148,7 +148,7 @@ public class UpdateHandler extends BaseHandlerStd {
      */
     private UpdateRescoreExecutionPlanResponse updateExecutionPlan(
         final UpdateRescoreExecutionPlanRequest updateRescoreExecutionPlanRequest,
-        final ProxyClient<KendraIntelligentRankingClient> proxyClient,
+        final ProxyClient<KendraRankingClient> proxyClient,
         final Logger logger) {
       UpdateRescoreExecutionPlanResponse updateRescoreExecutionPlanResponse;
       // In this code block we assume the previous DescribeExecutionPlan API call validated the resource exists and so doesn't
@@ -179,7 +179,7 @@ public class UpdateHandler extends BaseHandlerStd {
     }
 
     private ProgressEvent<ResourceModel, CallbackContext> updateTags(
-        final ProxyClient<KendraIntelligentRankingClient> proxyClient,
+        final ProxyClient<KendraRankingClient> proxyClient,
         final ProgressEvent<ResourceModel, CallbackContext> progress,
         ResourceHandlerRequest<ResourceModel> request) {
       CallbackContext callbackContext = progress.getCallbackContext();

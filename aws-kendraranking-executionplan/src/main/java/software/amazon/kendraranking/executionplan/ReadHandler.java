@@ -1,12 +1,12 @@
 package software.amazon.kendraranking.executionplan;
 
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DescribeRescoreExecutionPlanResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ListTagsForResourceRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ListTagsForResourceResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ResourceNotFoundException;
-import software.amazon.awssdk.services.kendraintelligentranking.KendraIntelligentRankingClient;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DescribeRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanResponse;
+import software.amazon.awssdk.services.kendraranking.model.ListTagsForResourceRequest;
+import software.amazon.awssdk.services.kendraranking.model.ListTagsForResourceResponse;
+import software.amazon.awssdk.services.kendraranking.model.ResourceNotFoundException;
+import software.amazon.awssdk.services.kendraranking.KendraRankingClient;
+import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanRequest;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -35,7 +35,7 @@ public class ReadHandler extends BaseHandlerStd {
       final AmazonWebServicesClientProxy proxy,
       final ResourceHandlerRequest<ResourceModel> request,
       final CallbackContext callbackContext,
-      final ProxyClient<KendraIntelligentRankingClient> proxyClient,
+      final ProxyClient<KendraRankingClient> proxyClient,
       final Logger logger) {
 
     final ResourceModel model = request.getDesiredResourceState();

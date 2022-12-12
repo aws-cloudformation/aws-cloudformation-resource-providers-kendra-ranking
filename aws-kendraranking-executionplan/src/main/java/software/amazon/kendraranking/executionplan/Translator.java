@@ -1,18 +1,18 @@
 package software.amazon.kendraranking.executionplan;
 
-import software.amazon.awssdk.services.kendraintelligentranking.model.CapacityUnitsConfiguration;
-import software.amazon.awssdk.services.kendraintelligentranking.model.CreateRescoreExecutionPlanRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DeleteRescoreExecutionPlanRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DescribeRescoreExecutionPlanRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DescribeRescoreExecutionPlanResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ListRescoreExecutionPlansRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ListRescoreExecutionPlansResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ListTagsForResourceRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ListTagsForResourceResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.Tag;
-import software.amazon.awssdk.services.kendraintelligentranking.model.TagResourceRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.UntagResourceRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.UpdateRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.CapacityUnitsConfiguration;
+import software.amazon.awssdk.services.kendraranking.model.CreateRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.DeleteRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanResponse;
+import software.amazon.awssdk.services.kendraranking.model.ListRescoreExecutionPlansRequest;
+import software.amazon.awssdk.services.kendraranking.model.ListRescoreExecutionPlansResponse;
+import software.amazon.awssdk.services.kendraranking.model.ListTagsForResourceRequest;
+import software.amazon.awssdk.services.kendraranking.model.ListTagsForResourceResponse;
+import software.amazon.awssdk.services.kendraranking.model.Tag;
+import software.amazon.awssdk.services.kendraranking.model.TagResourceRequest;
+import software.amazon.awssdk.services.kendraranking.model.UntagResourceRequest;
+import software.amazon.awssdk.services.kendraranking.model.UpdateRescoreExecutionPlanRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -214,5 +214,18 @@ public class Translator {
                 .value(x.getValue()).build())
             .collect(Collectors.toList()))
         .build();
+  }
+
+  /**
+   * Overloaded converter method to convert Map<String, String> to Collection<Tag>
+   * where Tag is SDK object and Tags is RPDK object
+   */
+  static List<software.amazon.kendraranking.executionplan.Tag> transformTags(final Map<String, String> tags) {
+    if (tags == null) return null;
+    final List<software.amazon.kendraranking.executionplan.Tag> tags_collection =
+        tags.entrySet().stream()
+            .map(e -> software.amazon.kendraranking.executionplan.Tag.builder().key(e.getKey()).value(e.getValue()).build())
+            .collect(Collectors.toList());
+    return tags_collection;
   }
 }

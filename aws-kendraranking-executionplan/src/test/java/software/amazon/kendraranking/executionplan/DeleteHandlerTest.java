@@ -1,14 +1,14 @@
 package software.amazon.kendraranking.executionplan;
 
 import java.time.Duration;
-import software.amazon.awssdk.services.kendraintelligentranking.KendraIntelligentRankingClient;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ConflictException;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DeleteRescoreExecutionPlanRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DeleteRescoreExecutionPlanResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DescribeRescoreExecutionPlanRequest;
-import software.amazon.awssdk.services.kendraintelligentranking.model.DescribeRescoreExecutionPlanResponse;
-import software.amazon.awssdk.services.kendraintelligentranking.model.RescoreExecutionPlanStatus;
-import software.amazon.awssdk.services.kendraintelligentranking.model.ResourceNotFoundException;
+import software.amazon.awssdk.services.kendraranking.KendraRankingClient;
+import software.amazon.awssdk.services.kendraranking.model.ConflictException;
+import software.amazon.awssdk.services.kendraranking.model.DeleteRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.DeleteRescoreExecutionPlanResponse;
+import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanResponse;
+import software.amazon.awssdk.services.kendraranking.model.RescoreExecutionPlanStatus;
+import software.amazon.awssdk.services.kendraranking.model.ResourceNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnResourceConflictException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Delay;
@@ -42,17 +42,17 @@ public class DeleteHandlerTest extends AbstractTestBase {
     private AmazonWebServicesClientProxy proxy;
 
     @Mock
-    private ProxyClient<KendraIntelligentRankingClient> proxyClient;
+    private ProxyClient<KendraRankingClient> proxyClient;
 
     @Mock
-    KendraIntelligentRankingClient sdkClient;
+    KendraRankingClient sdkClient;
 
     Delay testDelay = Constant.of().timeout(Duration.ofMinutes(1)).delay(Duration.ofMillis(1L)).build();
 
     @BeforeEach
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
-        sdkClient = mock(KendraIntelligentRankingClient.class);
+        sdkClient = mock(KendraRankingClient.class);
         proxyClient = MOCK_PROXY(proxy, sdkClient);
     }
 
@@ -146,8 +146,8 @@ public class DeleteHandlerTest extends AbstractTestBase {
     public void handleRequest_FailWith_ConflictException() {
         final DeleteHandler handler = new DeleteHandler(testDelay);
 
-        when(proxyClient.client().describeRescoreExecutionPlan(any(DescribeRescoreExecutionPlanRequest.class)))
-            .thenReturn(DescribeRescoreExecutionPlanResponse.builder().build());
+//        when(proxyClient.client().describeRescoreExecutionPlan(any(DescribeRescoreExecutionPlanRequest.class)))
+//            .thenReturn(DescribeRescoreExecutionPlanResponse.builder().build());
 
         when(proxyClient.client().deleteRescoreExecutionPlan(any(DeleteRescoreExecutionPlanRequest.class)))
             .thenThrow(ConflictException.builder().build());
@@ -166,6 +166,6 @@ public class DeleteHandlerTest extends AbstractTestBase {
         });
 
         verify(proxyClient.client(), times(1)).deleteRescoreExecutionPlan(any(DeleteRescoreExecutionPlanRequest.class));
-        verify(proxyClient.client(), times(1)).describeRescoreExecutionPlan(any(DescribeRescoreExecutionPlanRequest.class));
+        //verify(proxyClient.client(), times(1)).describeRescoreExecutionPlan(any(DescribeRescoreExecutionPlanRequest.class));
     }
 }
