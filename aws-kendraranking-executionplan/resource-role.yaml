@@ -13,7 +13,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: resources.cloudformation.amazonaws.com
+              Service: ["resources.cloudformation.amazonaws.com", "cloudformation.amazonaws.com"]
             Action: sts:AssumeRole
             Condition:
               StringEquals:
@@ -38,6 +38,7 @@ Resources:
                 - "kendra-ranking:TagResource"
                 - "kendra-ranking:UntagResource"
                 - "kendra-ranking:UpdateRescoreExecutionPlan"
+                - "s3:PutObject"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

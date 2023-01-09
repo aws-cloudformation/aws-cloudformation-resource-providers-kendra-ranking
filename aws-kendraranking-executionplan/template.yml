@@ -12,13 +12,13 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: software.amazon.kendraranking.executionplan.HandlerWrapper::handleRequest
-      Runtime: java8
-      CodeUri: ./target/aws-kendraranking-executionplan-handler-1.0-SNAPSHOT.jar
+      Runtime: java11
+      CodeUri: ./target/aws-kendraranking-executionplan-1.0.jar
 
   TestEntrypoint:
     Type: AWS::Serverless::Function
     Properties:
       Handler: software.amazon.kendraranking.executionplan.HandlerWrapper::testEntrypoint
-      Runtime: java8
-      CodeUri: ./target/aws-kendraranking-executionplan-handler-1.0-SNAPSHOT.jar
+      Runtime: java11
+      CodeUri: ./target/aws-kendraranking-executionplan-1.0.jar
 

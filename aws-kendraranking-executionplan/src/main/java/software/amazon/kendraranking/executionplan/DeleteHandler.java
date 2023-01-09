@@ -11,6 +11,7 @@ import software.amazon.awssdk.services.kendraranking.model.DeleteRescoreExecutio
 import software.amazon.awssdk.services.kendraranking.model.DeleteRescoreExecutionPlanResponse;
 import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanRequest;
 import software.amazon.awssdk.services.kendraranking.model.ResourceNotFoundException;
+import software.amazon.awssdk.services.kendraranking.model.ThrottlingException;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnResourceConflictException;
@@ -28,7 +29,7 @@ public class DeleteHandler extends BaseHandlerStd {
       .timeout(Duration.ofDays(365L))
       // Set the delay to two minutes so the stabilization code only calls
       // DescribeRescoreExecutionPlan every one minute
-      .delay(Duration.ofMinutes(1))
+      .delay(Duration.ofMinutes(2))
       .build();
 
     private Delay delay;
@@ -60,7 +61,7 @@ public class DeleteHandler extends BaseHandlerStd {
         // for more information -> https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-test-contract.html
         // if target API does not support 'ResourceNotFoundException' then following check is required
         //.then(progress -> checkForPreDeleteResourceExistence(proxy, proxyClient, request, progress))
-        .then(progress -> preExistenceCheckForDelete(proxy, proxyClient, progress, request, logger))
+        //.then(progress -> preExistenceCheckForDelete(proxy, proxyClient, progress, request, logger))
         // STEP 2.0 [delete/stabilize progress chain - required for resource deletion]
         .then(progress ->
             // If your service API throws 'ResourceNotFoundException' for delete requests then DeleteHandler can return just proxy.initiate construction
@@ -86,34 +87,6 @@ public class DeleteHandler extends BaseHandlerStd {
                 .done(this::setResourceModelToNullAndReturnSuccess));
   }
 
-  private ProgressEvent<ResourceModel, CallbackContext> preExistenceCheckForDelete(
-      final AmazonWebServicesClientProxy proxy,
-      final ProxyClient<KendraRankingClient> proxyClient,
-      final ProgressEvent<ResourceModel, CallbackContext> progressEvent,
-      final ResourceHandlerRequest<ResourceModel> request,
-      Logger logger
-  ) {
-    ResourceModel model = progressEvent.getResourceModel();
-    CallbackContext callbackContext = progressEvent.getCallbackContext();
-
-    logger.log(String.format("%s [%s] pre-existence check for deletion", ResourceModel.TYPE_NAME, model.getPrimaryIdentifier()));
-
-    DescribeRescoreExecutionPlanRequest describeRescoreExecutionPlanRequest = DescribeRescoreExecutionPlanRequest.builder()
-        .id(model.getId())
-        .build();
-    try {
-      proxyClient.injectCredentialsAndInvokeV2(describeRescoreExecutionPlanRequest,
-          proxyClient.client()::describeRescoreExecutionPlan);
-      return ProgressEvent.progress(model, callbackContext);
-    } catch (ResourceNotFoundException e) {
-      if (callbackContext.isDeleteWorkflow()) {
-        logger.log(String.format("In a delete workflow. Allow ResourceNotFoundException to propagate."));
-        return ProgressEvent.progress(model, callbackContext);
-      }
-      logger.log(String.format("%s [%s] does not pre-exist", ResourceModel.TYPE_NAME, model.getPrimaryIdentifier()));
-      throw new CfnNotFoundException(ResourceModel.TYPE_NAME, describeRescoreExecutionPlanRequest.id(), e);
-    }
-  }
 
   private ProgressEvent<ResourceModel, CallbackContext> setResourceModelToNullAndReturnSuccess(
       DeleteRescoreExecutionPlanRequest deleteRescoreExecutionPlanRequest,
@@ -190,6 +163,8 @@ public class DeleteHandler extends BaseHandlerStd {
       stabilized = false;
     } catch (ResourceNotFoundException e) {
       stabilized = true;
+    } catch (ThrottlingException e) {
+      stabilized = false;
     }
     logger.log(String.format("%s [%s] deletion has stabilized: %s", ResourceModel.TYPE_NAME, model.getPrimaryIdentifier(), stabilized));
     return stabilized;

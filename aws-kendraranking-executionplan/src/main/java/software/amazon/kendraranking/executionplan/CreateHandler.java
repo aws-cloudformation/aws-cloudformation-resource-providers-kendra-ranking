@@ -7,12 +7,14 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.core.exception.RetryableException;
 import software.amazon.awssdk.services.kendraranking.model.AccessDeniedException;
 import software.amazon.awssdk.services.kendraranking.model.ConflictException;
 import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanRequest;
 import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanResponse;
 import software.amazon.awssdk.services.kendraranking.model.RescoreExecutionPlanStatus;
 import software.amazon.awssdk.services.kendraranking.model.ServiceQuotaExceededException;
+import software.amazon.awssdk.services.kendraranking.model.ThrottlingException;
 import software.amazon.awssdk.services.kendraranking.model.ValidationException;
 import software.amazon.awssdk.services.kendraranking.KendraRankingClient;
 import software.amazon.awssdk.services.kendraranking.model.CreateRescoreExecutionPlanRequest;
@@ -39,7 +41,7 @@ public class CreateHandler extends BaseHandlerStd {
         .timeout(Duration.ofDays(365L))
         // Set the delay to two minutes so the stabilization code only calls
         // DescribeRescoreExecutionPlan every one minute
-        .delay(Duration.ofMinutes(1))
+        .delay(Duration.ofMinutes(2))
         .build();
 
     private Delay delay;
@@ -67,6 +69,11 @@ public class CreateHandler extends BaseHandlerStd {
         final CallbackContext callbackContext,
         final ProxyClient<KendraRankingClient> proxyClient,
         final Logger logger) {
+        final ResourceModel model = request.getDesiredResourceState();
+
+        if (request.getDesiredResourceTags() != null && !request.getDesiredResourceTags().isEmpty()) {
+          model.setTags(Translator.transformTags(request.getDesiredResourceTags()));
+        }
 
         return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
             // STEP 1 [create progress chain - required for resource creation]
@@ -143,7 +150,10 @@ public class CreateHandler extends BaseHandlerStd {
         throw new CfnResourceConflictException(e);
       } catch (ServiceQuotaExceededException e) {
         throw new CfnServiceLimitExceededException(ResourceModel.TYPE_NAME, e.getMessage(), e.getCause());
-      } catch (final AwsServiceException e) {
+      } catch (ThrottlingException e) {
+        throw RetryableException.builder().cause(e).build();
+      }
+      catch (final AwsServiceException e) {
         /*
          * While the handler contract states that the handler must always return a progress event,
          * you may throw any instance of BaseHandlerException, as the wrapper map it to a progress event.
