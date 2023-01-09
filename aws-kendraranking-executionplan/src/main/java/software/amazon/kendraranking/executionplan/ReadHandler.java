@@ -1,12 +1,14 @@
 package software.amazon.kendraranking.executionplan;
 
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.core.exception.RetryableException;
 import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanResponse;
 import software.amazon.awssdk.services.kendraranking.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.kendraranking.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.kendraranking.model.ResourceNotFoundException;
 import software.amazon.awssdk.services.kendraranking.KendraRankingClient;
 import software.amazon.awssdk.services.kendraranking.model.DescribeRescoreExecutionPlanRequest;
+import software.amazon.awssdk.services.kendraranking.model.ThrottlingException;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -46,6 +48,8 @@ public class ReadHandler extends BaseHandlerStd {
           describeRescoreExecutionPlanRequest, proxyClient.client()::describeRescoreExecutionPlan);
     } catch (ResourceNotFoundException e) {
       throw new CfnNotFoundException(ResourceModel.TYPE_NAME, describeRescoreExecutionPlanRequest.id(), e);
+    } catch (ThrottlingException e) {
+      throw RetryableException.builder().cause(e).build();
     } catch (final AwsServiceException e) { // ResourceNotFoundException
       /*
        * While the handler contract states that the handler must always return a progress event,

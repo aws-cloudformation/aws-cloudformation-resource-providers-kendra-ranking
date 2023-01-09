@@ -30,9 +30,10 @@
       ],
       "additionalProperties": false
     },
-    "TagList": {
+    "Tags": {
       "description": "List of tags",
       "type": "array",
+      "insertionOrder": false,
       "maxItems": 200,
       "items": {
         "$ref": "#/definitions/Tag"
@@ -71,6 +72,13 @@
       "maxLength": 1000
     }
   },
+  "tagging": {
+    "taggable": true,
+    "tagOnCreate": true,
+    "tagUpdatable": false,
+    "cloudFormationSystemTags": true,
+    "tagProperty": "/properties/Tags"
+  },
   "properties": {
     "Id": {
       "$ref": "#/definitions/Id"
@@ -84,7 +92,7 @@
     },
     "Tags": {
       "description": "Tags for labeling the execution plan",
-      "$ref": "#/definitions/TagList"
+      "$ref": "#/definitions/Tags"
     },
     "Name": {
       "$ref": "#/definitions/Name"
